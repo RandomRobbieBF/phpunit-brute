@@ -18,11 +18,14 @@ session = requests.Session()
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-u", "--url", required=True ,default="http://localhost",help="URL to test")
-parser.add_argument("-p", "--proxy", default="http://127.0.0.1:8085",required=False, help="Proxy for debugging")
+parser.add_argument("-p", "--proxy",required=False, help="Proxy for debugging")
 
 args = parser.parse_args()
 url = args.url
-proxy = args.proxy
+if args.proxy:
+	proxy = args.proxy
+else:
+	proxy = ""
 
 
 
