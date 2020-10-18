@@ -11,23 +11,28 @@
 import requests
 import sys
 import argparse
+import os.path
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 session = requests.Session()
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-u", "--url", required=True ,default="http://localhost",help="URL to test")
-parser.add_argument("-p", "--proxy",required=False, help="Proxy for debugging")
+parser.add_argument("-u", "--url", required=False ,default="http://localhost",help="URL to test")
+parser.add_argument("-f", "--file", default="",required=False, help="File of urls")
+parser.add_argument("-p", "--proxy", default="",required=False, help="Proxy for debugging")
 
 args = parser.parse_args()
 url = args.url
+urls = args.file
+
+
 if args.proxy:
 	proxy = args.proxy
 else:
 	proxy = ""
-
-
+	
+	
 
 
 http_proxy = proxy
@@ -58,8 +63,9 @@ def test_url(url,urlpath):
 				print("[-] No Luck for "+urlpath+" [-]")
 		else:
 			print("[-] No Luck for "+urlpath+" [-]")
-	except:
+	except Exception as e:
 		print ("[-]Check Url might have Issues[-]")
+		print(e)
 		sys.exit(0)
 			
 			
@@ -72,9 +78,29 @@ def grab_paths(url):
 			loop = test_url(url,urlpath)
 			if loop:
 				break
-	except:
+	except Exception as e:
 		print("[-] Failed to obtain paths file [-]")
+		print(e)
 		sys.exit(0)
 				
+
+
+if urls:
+	if os.path.exists(urls):
+		with open(urls, 'r') as f:
+			for line in f:
+				url = line.replace("\n","")
+				try:
+					print("Testing "+url+"")
+					grab_paths(url)
+				except KeyboardInterrupt:
+					print ("Ctrl-c pressed ...")
+					sys.exit(1)
+				except Exception as e:
+					print('Error: %s' % e)
+					pass
+		f.close()
 	
-grab_paths(url)
+
+else:
+	grab_paths(url)
