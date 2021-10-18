@@ -30,7 +30,7 @@ urls = args.file
 if args.proxy:
 	http_proxy = args.proxy
 	os.environ['HTTP_PROXY'] = http_proxy
-	os.environ['HTTPS_PROXY'] = http_proxy"
+	os.environ['HTTPS_PROXY'] = http_proxy
 	
 	
 
